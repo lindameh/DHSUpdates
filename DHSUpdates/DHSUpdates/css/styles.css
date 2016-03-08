@@ -1,0 +1,101 @@
+#post {
+	display:inline-block;
+	margin:10px;
+	max-width:280px;
+}
+
+h1{
+	display:inline-block;
+	font-family:Impact; 
+	text-align:left; 
+	color:#555555;
+}
+
+h2{
+	font-family:Arial;
+}
+
+p{
+	font-size: 17px;
+}
+
+img{
+	max-width: 100%;
+}
+
+.button {
+	-webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    background-color: #555555;
+    border: 2px solid #555555;
+    color: white;
+    text-align: center;
+}
+
+.button:hover{
+	background-color:white;
+	color:black;
+}
+
+.button1{
+	padding: 10px 20px;
+	float:right;
+	margin-top:15px;
+	border-radius: 12px;
+	font-size:15px;
+}
+
+.button3{
+	padding: 10px 20px;
+	float:right;
+	margin-right:2%;
+	margin-top:15px;
+	border-radius: 12px;
+	font-size:15px;
+
+}
+.button2{
+	width: 150px;
+	height: 150px;
+	border-radius:100%;
+	margin-top:10px;
+	margin-bottom:10px;
+	margin-left:10px;
+	margin-right:10px;
+	font-size:22px;
+	font-family:"Comic Sans MS", cursive, sans-serif;
+}
+
+.container-fluid {
+  padding-right: 50px;
+  padding-left: 50px;
+}
+
+/*.bgimage{
+	background-image: url('../images/dhs.jpg');
+    background-position: center center;
+    background-size: cover;
+    height: 260px;
+}*/
+
+.carousel-inner > .item > img,.carousel-inner > .item > a > img {
+	width: 80%;
+	margin: auto;
+}
+
+a{
+	color:#555555
+}
+.icon {
+    max-width: 150px;
+    margin: 0 auto;
+    display: block;
+}
+
+.services section {
+    text-align: center;
+}
+
+footer{
+	text-align:center;
+}
