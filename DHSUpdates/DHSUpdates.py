@@ -24,6 +24,7 @@ class Event(ndb.Model):
 	inputDescription = ndb.TextProperty()
 
 class Comment(ndb.Model):
+	author = ndb.StringProperty(indexed=False)
 	content = ndb.TextProperty(indexed=False)
 	date = ndb.DateTimeProperty(auto_now_add=True)
 
@@ -64,6 +65,26 @@ class AboutAppPage(webapp2.RequestHandler):
 		}
 		
 		template = JINJA_ENVIRONMENT.get_template('aboutapp.html')
+		self.response.write(template.render(template_values))
+
+class HistoryPage(webapp2.RequestHandler):
+	
+    def get(self):
+		user = users.get_current_user()
+		if user:
+			url = users.create_logout_url(self.request.uri)
+			url_linktext = 'LOGOUT'
+		else:
+			url = users.create_login_url(self.request.uri)
+			url_linktext = 'LOGIN'
+			
+		template_values = {
+			'user': user,
+			'url': url,
+			'url_linktext': url_linktext,
+		}
+		
+		template = JINJA_ENVIRONMENT.get_template('history.html')
 		self.response.write(template.render(template_values))
 
 class HowToUsePage(webapp2.RequestHandler):
@@ -244,8 +265,8 @@ class FeedbackPage(webapp2.RequestHandler):
                             feedback_key)
 		
 		for comment in comments:
-			if user:
-			    self.response.out.write('<p>%s:</p>' % user)
+			if comment.author:
+			    self.response.out.write('<p>%s:</p>' % comment.author)
 			else:
 				self.response.out.write('<p>Anonymous:</p>')
 			self.response.out.write('<blockquote>%s</blockquote><hr>' % cgi.escape(comment.content))
@@ -270,12 +291,15 @@ class FeedbackPage(webapp2.RequestHandler):
 class PostFeedback(webapp2.RequestHandler):
 	def post(self):
 		comment = Comment(parent = feedback_key)
+		if users.get_current_user():
+			comment.author = users.get_current_user().email()
 		comment.content = self.request.get("content")
 		comment.put()
 		self.redirect('/feedback')
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
+	('/history', HistoryPage),
 	('/aboutapp', AboutAppPage),
 	('/how_to_use',HowToUsePage),
 	('/events',EventsPage),
