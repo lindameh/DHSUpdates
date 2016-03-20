@@ -17,11 +17,11 @@ upload_key = ndb.Key('Upload','default_upload')
 	
 class Event(ndb.Model):
 	author = ndb.StringProperty(indexed=False)
-	inputName = ndb.TextProperty()
+	inputName = ndb.StringProperty(indexed=True)
 	inputStart = ndb.DateTimeProperty()
 	inputEnd = ndb.DateTimeProperty()
-	inputVenue = ndb.TextProperty()
-	inputDescription = ndb.TextProperty()
+	inputVenue = ndb.TextProperty(indexed=False)
+	inputDescription = ndb.TextProperty(indexed=False)
 
 class Comment(ndb.Model):
 	author = ndb.StringProperty(indexed=False)
@@ -87,6 +87,50 @@ class HistoryPage(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('history.html')
 		self.response.write(template.render(template_values))
 
+class SearchPage(webapp2.RequestHandler):
+	
+    def get(self):
+		user = users.get_current_user()
+		if user:
+			url = users.create_logout_url(self.request.uri)
+			url_linktext = 'LOGOUT'
+		else:
+			url = users.create_login_url(self.request.uri)
+			url_linktext = 'LOGIN'
+			
+		search_value = self.request.get("search_value")
+		event_query = Event.query().order(-Event.inputStart)
+		
+		levents = event_query.fetch(100)
+		events = []
+		for i in levents:
+			if search_value.lower() in i.inputName.lower():
+				events.append(i)
+		
+		template_values = {
+			'user': user,
+			'url': url,
+			'url_linktext': url_linktext,
+            'search_value': search_value,
+            'events': events,
+		}
+		
+		template = JINJA_ENVIRONMENT.get_template('search.html')
+		self.response.write(template.render(template_values))
+		
+    def post(self):
+        search_value = self.request.get('search_value')
+
+        template_values = {
+            "search_value": search_value,
+        }
+
+        template = JINJA_ENVIRONMENT.get_template('search.html')
+        self.response.write(template.render(template_values))
+
+        self.redirect("/search?search_value={0}".format(search_value))
+
+
 class HowToUsePage(webapp2.RequestHandler):
 	
     def get(self):
@@ -133,7 +177,7 @@ class EventsPage(webapp2.RequestHandler):
 			upload_key)
 		
 		for event in events:
-			self.response.out.write('<div class="panel panel-info" id="post" class="col-sm-6 col-md-4"><div class="panel-heading">%s<h3 class="panel-title"></h3></div>' % cgi.escape(event.inputName))
+			self.response.out.write('<div class="panel panel-info" id="post" class="col-sm-6 col-md-4"><div class="panel-heading"><h3 class="panel-title">%s</h3></div>' % cgi.escape(event.inputName))
 			self.response.out.write('<div class="panel-body"><p>Starting Time: %s</p>' % event.inputStart.strftime("%d-%m-%Y %H:%M"))
 			self.response.out.write('<p>Ending Time: %s</p>' % event.inputEnd.strftime("%d-%m-%Y %H:%M"))
 			self.response.out.write('<p>Venue: %s</p>' % cgi.escape(event.inputVenue))
@@ -232,8 +276,8 @@ class PostUpload(webapp2.RequestHandler):
 		event = Event(parent = upload_key)
 		event.author = users.get_current_user().email()
 		event.inputName = self.request.get("inputName")
-		event.inputStart = datetime.strptime(self.request.get("inputStart"), "%d-%m-%YT%H:%M")
-		event.inputEnd = datetime.strptime(self.request.get("inputEnd"), "%d-%m-%YT%H:%M")
+		event.inputStart = datetime.strptime(self.request.get("inputStart"), "%Y-%m-%dT%H:%M")
+		event.inputEnd = datetime.strptime(self.request.get("inputEnd"), "%Y-%m-%dT%H:%M")
 		event.inputVenue = self.request.get("inputVenue")
 		event.inputDescription = self.request.get("inputDescription")
 		event.put()
@@ -300,6 +344,7 @@ class PostFeedback(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainPage),
 	('/history', HistoryPage),
+	('/search', SearchPage),
 	('/aboutapp', AboutAppPage),
 	('/how_to_use',HowToUsePage),
 	('/events',EventsPage),
