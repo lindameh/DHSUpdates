@@ -54,8 +54,9 @@
 
 #post {
 	display:inline-block;
-	margin:10px;
-	max-width:280px;
+	margin:15px;
+	max-width:320px;
+	vertical-align:top;
 }
 
 h1{
@@ -96,7 +97,7 @@ img{
 	float:right;
 	margin-top:15px;
 	border-radius: 12px;
-	font-size:15px;
+	font-size:1em;
 }
 
 .button3{
@@ -105,7 +106,7 @@ img{
 	margin-right:2%;
 	margin-top:15px;
 	border-radius: 12px;
-	font-size:15px;
+	font-size:1em;
 
 }
 .button2{
@@ -124,13 +125,6 @@ img{
   padding-right: 50px;
   padding-left: 50px;
 }
-
-/*.bgimage{
-	background-image: url('../images/dhs.jpg');
-    background-position: center center;
-    background-size: cover;
-    height: 260px;
-}*/
 
 .carousel-inner > .item > img,.carousel-inner > .item > a > img {
 	width: 80%;
@@ -152,4 +146,17 @@ a{
 
 footer{
 	text-align:center;
+}
+
+@media screen and (max-width:320px) {
+	h1{
+		text-align:center;
+		display:block;
+	}
+	.button1{
+		float:center;
+	}
+	.button3{
+		float:center;
+	}
 }

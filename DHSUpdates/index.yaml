@@ -10,6 +10,12 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Comment
+  ancestor: yes
+  properties:
+  - name: date
+    direction: desc
+
 - kind: Event
   properties:
   - name: inputName
@@ -20,3 +26,9 @@ indexes:
   ancestor: yes
   properties:
   - name: inputStart
+
+- kind: Event
+  ancestor: yes
+  properties:
+  - name: inputStart
+    direction: desc

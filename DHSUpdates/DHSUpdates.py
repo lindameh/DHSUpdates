@@ -173,7 +173,7 @@ class EventsPage(webapp2.RequestHandler):
 		events = ndb.gql('SELECT * '
 			'FROM Event '
 			'WHERE ANCESTOR IS :1 '
-			'ORDER BY inputStart ASC LIMIT 10',
+			'ORDER BY inputStart DESC LIMIT 15',
 			upload_key)
 		
 		for event in events:
@@ -182,7 +182,11 @@ class EventsPage(webapp2.RequestHandler):
 			self.response.out.write('<p>Ending Time: %s</p>' % event.inputEnd.strftime("%d-%m-%Y %H:%M"))
 			self.response.out.write('<p>Venue: %s</p>' % cgi.escape(event.inputVenue))
 			self.response.out.write('<p>Description: %s</p><br>' % cgi.escape(event.inputDescription))
-			self.response.out.write('<p>Uploaded by <strong>%s</strong></p></div></div>' % event.author)
+			self.response.out.write('<p>Uploaded by <strong>%s</strong></p>' % event.author)
+			if user:
+				if user.email()==event.author:
+					self.response.out.write('<form action="/deleteEvent?id=%s" method ="post"><button class="btn btn-default" onclick="confirmDelete()">Delete this event</button></form>'% event.key.id())
+			self.response.out.write("""</div></div>""")
 
 		self.response.out.write("""
 				</div>
@@ -193,6 +197,14 @@ class EventsPage(webapp2.RequestHandler):
 				</footer>
 				</body>
 				</html>""")
+
+class DeleteEvent(webapp2.RequestHandler):
+    def post(self):
+		event = Event()
+		event = event.get_by_id(long(self.request.get('id')), parent=upload_key)
+		event.key.delete()
+		
+		self.redirect('/events')				
 
 class UploadPage(webapp2.RequestHandler):
 	def get(self):
@@ -351,5 +363,6 @@ app = webapp2.WSGIApplication([
 	('/upload',UploadPage),
 	('/feedback',FeedbackPage),
 	('/postUpload',PostUpload),
-	('/postFeedback',PostFeedback)
+	('/postFeedback',PostFeedback),
+	('/deleteEvent',DeleteEvent)
 ], debug=True)
